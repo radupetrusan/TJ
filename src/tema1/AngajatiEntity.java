@@ -77,7 +77,7 @@ public class AngajatiEntity {
 
     @Override
     public String toString() {
-        return this.getNume();
+        return this.getNume() + ", " + this.getFunctia() + " la " + this.getFirma() + " din data de " + this.getDataAngajarii().toString() + " (id " + this.getId() + ")";
     }
 
     @Override
