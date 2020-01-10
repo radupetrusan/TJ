@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.springframework.org/schema/beans
+http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+<bean id="persoana" class="exemplu7.Persoana">
+<property name="nume" value="Popescu"/>
+<property name="varsta" value="20"/>
+<property name="adresa" ref="adr"/>
+</bean>
+<bean id="adr" class="exemplu7.Adresa">
+<constructor-arg value="2"/>
+<constructor-arg value="Venus"/>
+<constructor-arg value="Timisoara"/>
+</bean>
+</beans>

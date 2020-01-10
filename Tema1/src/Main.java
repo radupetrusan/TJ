@@ -249,20 +249,25 @@ public class Main {
         Session session = getSession();
         Transaction tx = null;
         try {
-//            tx = session.beginTransaction();
-//            String text = "from AngajatiEntity where id = " + id;
-//            Query query = session.createQuery(text);
-//            AngajatiEntity a = (AngajatiEntity) query.getSingleResult();
-//            if (a != null) {
-//                session.delete(a);
-//                tx.commit();
-//            }
+            tx = session.beginTransaction();
+            String text = "from AngajatiEntity where id = " + id;
+            Query query = session.createQuery(text);
+            try {
+                AngajatiEntity a = (AngajatiEntity) query.getSingleResult();
+                if (a != null) {
+                    session.delete(a);
+                    tx.commit();
+                }
+            }
+            catch (Exception e) {
+                System.out.println("Nu s-a sters nici un angajat (nu exista cu id-ul " + id);
+            }
 
-            String hql = "delete from AngajatiEntity where id = :id";
+//            String hql = "delete from AngajatiEntity where id = :id";
 //            Query q = session.createQuery(hql).setParameter("id", id);
-            session.de
-            q.executeUpdate();
-            tx.commit();
+//            session.de
+//            q.executeUpdate();
+//            tx.commit();
         }
         finally {
             session.close();

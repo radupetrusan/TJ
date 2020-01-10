@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:context="http://www.springframework.org/schema/context"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+    http://www.springframework.org/schema/context
+    http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+
+    <context:annotation-config/>
+	<bean id="auto" class="exercitiul2.Autoturism">
+	<property name="pret" value="1200"/>
+	<property name="viteza_max" value="180"/>
+	<property name="marca" value="Audi"/>
+	<property name="anul" value="1990"/>
+	</bean>
+	
+	<bean id="tir1" class="exercitiul2.Tir">
+	<property name="pret" value="3000"/>
+	<property name="viteza_max" value="100"/>
+	<property name="incarcatura_max" value="3000"/>
+	</bean>
+	
+	<bean id="tir2" class="exercitiul2.Tir">
+	<property name="pret" value="4000"/>
+	<property name="viteza_max" value="110"/>
+	<property name="incarcatura_max" value="2500"/>
+	</bean>
+
+	<bean id="moto1" class="exercitiul2.Motocicleta">
+		<constructor-arg value="1200"/>
+		<constructor-arg value="270"/>
+		<constructor-arg value="Yamaha"/>
+	</bean>
+	
+	<bean id="moto2" class="exercitiul2.Motocicleta">
+		<constructor-arg value="1500"/>
+		<constructor-arg value="260"/>
+		<constructor-arg value="Honda"/>
+	</bean>
+</beans>
+
