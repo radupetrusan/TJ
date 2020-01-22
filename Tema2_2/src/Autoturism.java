@@ -17,7 +17,6 @@ public class Autoturism extends Vehicul {
         return this.marca;
     }
 
-    @Autowired(required=false)
     @Value("Mercedes")
     public void setMarca(String marca) {
         this.marca = marca;
@@ -26,7 +25,7 @@ public class Autoturism extends Vehicul {
         return this.anFabricatie;
     }
 
-    @Value("2014")
+    @Value("1")
     public void setAnul(int anul) {
         this.anFabricatie = anul;
     }

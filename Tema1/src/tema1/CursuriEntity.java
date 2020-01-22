@@ -12,6 +12,7 @@ public class CursuriEntity {
     private Integer valoare;
     private Integer diplomaAbsolvire;
     private Integer anul;
+    private Integer idAngajat;
 
     @Id
     @Column(name = "id_curs")
@@ -73,6 +74,16 @@ public class CursuriEntity {
         this.anul = anul;
     }
 
+    @Basic
+    @Column(name = "id_angajat")
+    public Integer getIdAngajat() {
+        return idAngajat;
+    }
+
+    public void setIdAngajat(Integer id) {
+        this.idAngajat = id;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -84,6 +95,11 @@ public class CursuriEntity {
                 Objects.equals(valoare, that.valoare) &&
                 Objects.equals(diplomaAbsolvire, that.diplomaAbsolvire) &&
                 Objects.equals(anul, that.anul);
+    }
+
+    @Override
+    public String toString() {
+        return this.getIdCurs() + " " + this.getDenumire() + ", " + this.getNumarOre() + " ore, " + (this.getDiplomaAbsolvire() == 1 ? "cu" : "fara") + " diploma de absolvire in anul " + this.getAnul() + " a costat " + this.getValoare().toString() + " lei. Id angajat: " + this.getIdAngajat();
     }
 
     @Override

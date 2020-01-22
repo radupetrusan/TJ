@@ -5,8 +5,8 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 import tema1.AngajatiEntity;
+import tema1.CursuriEntity;
 
-import javax.persistence.criteria.CriteriaDelete;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -56,7 +56,7 @@ public class Main {
 
 
 
-    private static void Meniu() {
+    private static void Meniu() throws IOException {
         boolean loop = true;
         int optiune = 0;
         while (loop) {
@@ -150,6 +150,30 @@ public class Main {
                     DeleteAngajat(id);
                     break;
                 case 4:
+                    System.out.print("Introdu nume angajat: ");
+                    AngajatiEntity angajatEdit = GetAngajat(br.readLine());
+                    if (angajatEdit == null) {
+                        return;
+                    }
+                    System.out.print("Nume: ");
+                    angajatEdit.setNume(br.readLine());
+                    System.out.print("Firma: ");
+                    angajatEdit.setFirma(br.readLine());
+                    System.out.print("Functia:");
+                    angajatEdit.setFunctia(br.readLine());
+                    System.out.print("Data angajarii (YYYY-MM-DD): ");
+                    try {
+                        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                        Date parsedDate = dateFormat.parse(br.readLine());
+                        Timestamp timestamp = new java.sql.Timestamp(parsedDate.getTime());
+                        angajatEdit.setDataAngajarii(timestamp);
+                    } catch(Exception e) { //this generic but you can control another types of exception
+                        // look the origin of excption
+                        angajatEdit.setDataAngajarii(new Timestamp(System.currentTimeMillis()));
+                    }
+
+                    ModificaAngajat(angajatEdit);
+
                     break;
                 default:
                     break;
@@ -160,7 +184,79 @@ public class Main {
     }
 
     private static void GestionareCursuri() {
+        int optiune = 0;
 
+        System.out.println("1. Introdu curs");
+        System.out.println("2. Cauta curs");
+        System.out.println("3. Sterge curs");
+        System.out.println("4. Modificare curs");
+
+        System.out.println("");
+        System.out.println("Alege optiune:");
+
+        try {
+            optiune = Integer.parseInt(br.readLine());
+
+            switch (optiune) {
+                case 1:
+                    CursuriEntity cursNou = new CursuriEntity();
+                    System.out.print("Denumire: ");
+                    cursNou.setDenumire(br.readLine());
+                    System.out.print("Numar Ore: ");
+                    cursNou.setNumarOre(Integer.parseInt(br.readLine()));
+                    System.out.print("Valoare: ");
+                    cursNou.setValoare(Integer.parseInt(br.readLine()));
+                    System.out.print("Diploma absolvire (0/1): ");
+                    cursNou.setDiplomaAbsolvire(Integer.parseInt(br.readLine()));
+                    System.out.print("Anul: ");
+                    cursNou.setAnul(Integer.parseInt(br.readLine()));
+                    System.out.print("ID Angajat: ");
+                    cursNou.setIdAngajat(Integer.parseInt(br.readLine()));
+
+
+                    AddCurs(cursNou);
+                    break;
+                case 2:
+                    System.out.println("Introdu denumire: ");
+                    String nume = br.readLine();
+                    CursuriEntity curs = GetCurs(nume);
+                    if (curs != null) {
+                        System.out.println(curs.toString());
+                    } else {
+                        System.out.println("Nu a fost gasit cursul " + nume);
+                    }
+                    break;
+                case 3:
+                    System.out.print("Introdu id curs: ");
+                    Integer id = Integer.parseInt(br.readLine());
+                    DeleteCurs(id);
+                    break;
+                case 4:
+                    System.out.println("Introdu denumire: ");
+                    CursuriEntity cursEdit = GetCurs(br.readLine());
+                    if (cursEdit == null) {
+                        return;
+                    }
+                    System.out.print("Denumire: ");
+                    cursEdit.setDenumire(br.readLine());
+                    System.out.print("Numar Ore: ");
+                    cursEdit.setNumarOre(Integer.parseInt(br.readLine()));
+                    System.out.print("Valoare: ");
+                    cursEdit.setValoare(Integer.parseInt(br.readLine()));
+                    System.out.print("Diploma absolvire (0/1): ");
+                    cursEdit.setDiplomaAbsolvire(Integer.parseInt(br.readLine()));
+                    System.out.print("Anul: ");
+                    cursEdit.setAnul(Integer.parseInt(br.readLine()));
+                    System.out.print("ID Angajat: ");
+                    cursEdit.setIdAngajat(Integer.parseInt(br.readLine()));
+                    ModificaCurs(cursEdit);
+                    break;
+                default:
+                    break;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private static void AfisareAngajatiFirma() {
@@ -200,7 +296,48 @@ public class Main {
         }
     }
 
-    private static void AfisareAngajatiCurs() {
+    private static void AfisareAngajatiCurs() throws IOException {
+        Session session = getSession();
+        Transaction tx =null;
+
+        CursuriEntity diploma;
+        System.out.println("Introdu denumire curs: ");
+        String nume = br.readLine();
+        diploma = GetCurs(nume);
+        try
+        {
+            tx=	session.beginTransaction();
+            Query query = session.createQuery("FROM CursuriEntity C where C.denumire=:denumire");
+            query.setParameter("denumire", nume);
+            List<CursuriEntity> cursuri= query.list();
+            tx.commit();
+            session = getSession();
+            tx=	session.beginTransaction();
+            for(CursuriEntity c:cursuri)
+            {
+                if(c.getDiplomaAbsolvire() == 1)
+                {
+                    Query query1 = session.createQuery("FROM AngajatiEntity A where A.id=:id");
+                    query1.setParameter("id", c.getIdAngajat());
+                    AngajatiEntity angajat = (AngajatiEntity) query1.uniqueResult();
+                    if(angajat != null)
+                    {
+                        System.out.println(angajat.toString());
+                    }
+                }
+            }
+            tx.commit();
+        }
+        catch(HibernateException e)
+        {
+            if(tx !=null)
+                tx.rollback();
+            e.printStackTrace();
+        }
+        finally
+        {
+            session.close();
+        }
     }
 
     private static List<AngajatiEntity> GetAngajati(String queryText) {
@@ -262,15 +399,96 @@ public class Main {
             catch (Exception e) {
                 System.out.println("Nu s-a sters nici un angajat (nu exista cu id-ul " + id);
             }
-
-//            String hql = "delete from AngajatiEntity where id = :id";
-//            Query q = session.createQuery(hql).setParameter("id", id);
-//            session.de
-//            q.executeUpdate();
-//            tx.commit();
         }
         finally {
             session.close();
         }
+    }
+
+    private static void ModificaAngajat(AngajatiEntity angajat) {
+        if (angajat == null) {
+            return;
+        }
+
+        Session session = getSession();
+        Transaction tx = null;
+        try{
+            tx = session.beginTransaction();
+            session.update(angajat);
+            tx.commit();
+        }catch (HibernateException e) {
+            if (tx!=null) tx.rollback();
+            e.printStackTrace();
+        }finally { session.close(); }
+    }
+
+    private static CursuriEntity GetCurs(String nume) {
+        final Session session = getSession();
+        try {
+            String text = "from CursuriEntity where denumire like '" + nume + "'";
+            Query query = session.createQuery(text);
+            try {
+                CursuriEntity curs = (CursuriEntity) query.getSingleResult();
+                return curs;
+            }
+            catch (Exception e) {
+                return null;
+            }
+        } finally {
+            session.close();
+        }
+    }
+
+    private static void AddCurs(CursuriEntity curs) {
+        Session session = getSession();
+        Transaction tx = null;
+        try{
+            tx = session.beginTransaction();
+            session.save(curs);
+            tx.commit();
+        }catch (HibernateException e) {
+            if (tx!=null) tx.rollback();
+            e.printStackTrace();
+        }finally { session.close(); }
+    }
+
+    private static void DeleteCurs(Integer id) {
+        Session session = getSession();
+        Transaction tx = null;
+        try {
+            tx = session.beginTransaction();
+            String text = "from CursuriEntity where idCurs = " + id;
+            Query query = session.createQuery(text);
+            try {
+                CursuriEntity a = (CursuriEntity) query.getSingleResult();
+                if (a != null) {
+                    session.delete(a);
+                    tx.commit();
+                }
+            }
+            catch (Exception e) {
+                System.out.println("Nu s-a sters nici un curs (nu exista cu id-ul " + id);
+            }
+        }
+        finally {
+            session.close();
+        }
+    }
+
+    private static void ModificaCurs(CursuriEntity curs) {
+        if (curs == null) {
+            return;
+        }
+
+        Session session = getSession();
+        Transaction tx = null;
+        try{
+            tx = session.beginTransaction();
+            session.update(curs);
+            tx.commit();
+        }catch (HibernateException e) {
+            if (tx!=null) tx.rollback();
+            e.printStackTrace();
+        }finally { session.close(); }
     }
 }
